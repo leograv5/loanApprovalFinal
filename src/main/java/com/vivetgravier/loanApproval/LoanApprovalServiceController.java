@@ -31,7 +31,11 @@ public class LoanApprovalServiceController {
         if (value < 10000) {
             RestTemplate restTemplate = new RestTemplate();
             String uriGetRisk = URL_ACCOUNT_MANAGER + "getRisk?lastname="+name;
-            risk = restTemplate.getForObject(uriGetRisk, String.class);
+            try {
+                risk = restTemplate.getForObject(uriGetRisk, String.class);
+            } catch (Exception e) {
+                return "Le risque n'a pas pu etre recupere";
+            }
         }
 
 
