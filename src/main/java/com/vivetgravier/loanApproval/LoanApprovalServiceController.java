@@ -14,58 +14,69 @@ import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class LoanApprovalServiceController {
 
-    private static final String URL_APPROVAL_MANAGER = "urlApprovalManager";
-    private static final String URL_ACCOUNT_MANAGER = "https://inf63app8.appspot.com/";
-    private static final String URL_CHECK_ACCOUNT = "https://vivetgravier-check-account.herokuapp.com/checkAccount/";
+    private static final String URL_APPROVAL_MANAGER = "https://inf63app8.appspot.com/approvals/";
+    private static final String URL_ACCOUNT_MANAGER = "https://inf63app8.appspot.com/accounts/";
 
     @RequestMapping(value = "/loanApproval", method = RequestMethod.GET)
-    public String loanApproval(@RequestParam(name="name") String name, @RequestParam(name="value") float value) {
+    public String loanApproval(@RequestParam(name="name") String name, @RequestParam(name="value") double value) {
 
-        String risk = "LOW", msg = "";
-        ObjectMapper objectMapper = new ObjectMapper();
-        RestTemplate restTemplate = new RestTemplate();
+        String risk = "";
 
-        /*if (value < 10000) {
-            String uriGetRisk = URL_ACCOUNT_MANAGER + "accounts/getRisk?lastname="+name;
+
+        if (value < 10000) {
+            RestTemplate restTemplate = new RestTemplate();
+            String uriGetRisk = URL_ACCOUNT_MANAGER + "getRisk?lastname="+name;
             risk = restTemplate.getForObject(uriGetRisk, String.class);
-            return risk;
-        }*/
+        }
 
 
-        if (risk == "LOW") {
-            String uriAddToAccount = URL_ACCOUNT_MANAGER + "accounts/credit";
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            JSONObject jsonObject = new JSONObject();
+        if (Objects.equals(risk, "LOW")) {
             try {
-                jsonObject.put("lastname", name);
-                jsonObject.put("account", value);
-            } catch (JSONException e) {
-                e.printStackTrace();
+                addToAccount(name, value);
+            } catch (Exception e) {
+                return e.getClass().toString();
             }
-            HttpEntity<String> request =
-                    new HttpEntity<String>(jsonObject.toString(), headers);
-            restTemplate.postForEntity(uriAddToAccount, request, String.class);
+
             return "approved";
         }
 
         boolean approval = false;
-        if (risk == "HIGH" || value >= 10000) {
-             //approval = (boolean) restTemplate.getForObject(URL_APPROVAL_MANAGER, Boolean.class);
+        if (Objects.equals(risk, "HIGH") || value >= 10000) {
+            String uriCreateApproval = URL_APPROVAL_MANAGER + "add?lastname="+name;
+            RestTemplate restTemplate = new RestTemplate();
+            approval = restTemplate.postForObject(uriCreateApproval, "", boolean.class);
         }
 
         if (approval) {
+            try {
+                addToAccount(name, value);
+            } catch (Exception e) {
+                return e.getClass().toString();
+            }
             return "approved";
-        } else {
-            return "refused";
         }
+
+        return "refused";
+    }
+
+    private void addToAccount(String lastname, double account) throws Exception{
+        RestTemplate restTemplate = new RestTemplate();
+        String uriAddToAccount = URL_ACCOUNT_MANAGER + "accounts/credit";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("lastname", lastname);
+            jsonObject.put("account", account);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        HttpEntity<String> request = new HttpEntity<String>(jsonObject.toString(), headers);
+        restTemplate.postForEntity(uriAddToAccount, request, String.class);
     }
 }
