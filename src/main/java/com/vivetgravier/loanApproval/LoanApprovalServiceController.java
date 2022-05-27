@@ -47,7 +47,7 @@ public class LoanApprovalServiceController {
 
         boolean approval = false;
         if (Objects.equals(risk, "HIGH") || value >= 10000) {
-            String uriCreateApproval = URL_APPROVAL_MANAGER + "add?lastname="+name;
+            String uriCreateApproval = URL_APPROVAL_MANAGER + "add?lastname="+name+"&amount="+value;
             RestTemplate restTemplate = new RestTemplate();
             approval = restTemplate.postForObject(uriCreateApproval, "", boolean.class);
         }
