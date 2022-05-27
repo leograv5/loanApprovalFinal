@@ -66,7 +66,7 @@ public class LoanApprovalServiceController {
 
     private void addToAccount(String lastname, double account) throws Exception{
         RestTemplate restTemplate = new RestTemplate();
-        String uriAddToAccount = URL_ACCOUNT_MANAGER + "accounts/credit";
+        String uriAddToAccount = URL_ACCOUNT_MANAGER + "credit";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         JSONObject jsonObject = new JSONObject();
