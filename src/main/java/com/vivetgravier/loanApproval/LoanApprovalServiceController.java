@@ -20,7 +20,7 @@ import java.util.*;
 public class LoanApprovalServiceController {
 
     private static final String URL_APPROVAL_MANAGER = "https://approval-manager-dot-inf63app8.appspot.com/approvals/";
-    private static final String URL_ACCOUNT_MANAGER = "https://inf63app8.appspot.com/accounts/";
+    private static final String URL_ACCOUNT_MANAGER = "https://account-manager-dot-inf63app8.appspot.com/accounts/";
 
     @RequestMapping(value = "/loanApproval", method = RequestMethod.GET)
     public String loanApproval(@RequestParam(name="name") String name, @RequestParam(name="value") double value) {
