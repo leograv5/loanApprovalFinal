@@ -34,7 +34,7 @@ public class LoanApprovalServiceController {
             try {
                 risk = restTemplate.getForObject(uriGetRisk, String.class);
             } catch (Exception e) {
-                return "Le risque n'a pas pu etre recupere";
+                return "Le compte n'existe pas";
             }
         }
 
@@ -43,7 +43,7 @@ public class LoanApprovalServiceController {
             try {
                 addToAccount(name, value);
             } catch (Exception e) {
-                return e.getClass().toString();
+                return "Le compte demandé est inexistant";
             }
 
             return "approved";
@@ -60,7 +60,7 @@ public class LoanApprovalServiceController {
             try {
                 addToAccount(name, value);
             } catch (Exception e) {
-                return e.getClass().toString();
+                return "Le compte demandé est inexistant";
             }
             return "approved";
         }
